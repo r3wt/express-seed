@@ -1,0 +1,27 @@
+{
+  "name": "express-seed",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.17.2",
+    "express": "^4.15.4",
+    "express-aglio": "^1.0.1",
+    "express-debug": "^1.1.1",
+    "express-fileupload": "^0.1.4",
+    "express-jwt": "^5.3.0",
+    "express-map2": "^1.0.7",
+    "express-mongoose-helper": "^1.0.3",
+    "jsonwebtoken": "^7.4.3",
+    "mongoose": "^4.11.7",
+    "morgan": "^1.8.2",
+    "node-uuid": "^1.4.8",
+    "string-to-stream": "^1.1.0"
+  }
+}
