@@ -19,6 +19,7 @@
     "express-map2": "^1.0.7",
     "express-mongoose-helper": "^1.0.3",
     "jsonwebtoken": "^7.4.3",
+    "mongo-express": "^0.42.2",
     "mongoose": "^4.11.7",
     "morgan": "^1.8.2",
     "node-uuid": "^1.4.8",

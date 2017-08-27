@@ -5,6 +5,9 @@ module.exports = {
     mongo: {
         url: process.env.MONGO_URL || 'mongodb://localhost/test',
         debug: process.env.MONGO_DEBUG || true,
+        admin_username:'',
+        admin_password:'',
+        use_ssl: false
     },
     port: process.env.PORT || 3000,
     domain: process.env.DOMAIN || 'localhost',

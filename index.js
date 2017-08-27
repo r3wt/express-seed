@@ -11,8 +11,17 @@ app.disable('x-powered-by');
 
 //serve a webapp
 if(config.env == 'development'){
-    
-    app.use('/',express.static(config.dir + '/../public'));
+
+	app.use('/',express.static(config.dir + '/../public'));
+	
+	//mongo express
+	log.info('starting mongo express server at /mongo');
+	var mongo_express = require('mongo-express/lib/middleware');
+	var mongo_express_config = require('./scripts/mongo_express_config');
+	app.use('/mongo', mongo_express(mongo_express_config));		
+
+	//express debug
+	require('express-debug')(app);
     
 }
 
@@ -20,7 +29,7 @@ if(config.docs) {
 	require('express-aglio')(app,{
 		source: config.dir + '/docs/source/index.apib',
 		output: config.dir + '/docs/html/index.html',
-		log: (...args)=>log.info(...args)
+		log: ()=>{}
 	});	
 }
  
@@ -52,12 +61,14 @@ app.on('mongoose.models.ready',()=>{
 	require('./middleware'); // load middleware
 	require('./routes');  // load our routes
 	
-	log.info('api instance running on port %d',config.port);
+	// Handle 500 
+	app.use((err, req, res, next)=>res.err(err));
+
+	//Handle 404
+	app.use((req, res, next)=>res.notFound());
+
+	log.info('app running on port %d',config.port);
 		
 	app.listen(config.port);
-	
-	if(config.env == 'development'){
-        require('express-debug')(app);
-	}
 	
 });
