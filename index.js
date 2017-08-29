@@ -9,10 +9,13 @@ global.Promise = require('bluebird');
 
 app.disable('x-powered-by');
 
-//serve a webapp
+
 if(config.env == 'development'){
 
-	app.use('/',express.static(config.dir + '/../public'));
+	//maybe serve a webapp
+	if(config.public_dir){
+		app.use('/',express.static(config.public_dir));
+	}
 	
 	//mongo express
 	log.info('starting mongo express server at /mongo');

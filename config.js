@@ -1,5 +1,6 @@
 module.exports = {
     dir: __dirname,
+    public_dir: process.env.PUBLIC_DIR || false,
     env: process.env.NODE_ENV || 'development',
     jwt_secret: process.env.JWT_SECRET || 'foobar',
     mongo: {
