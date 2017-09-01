@@ -1,3 +1,4 @@
+//for single user account.
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const uuid = require('node-uuid');

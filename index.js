@@ -7,8 +7,9 @@ global.log = new Logger(config.log.level,config.log.stream);
 global.Lib = require('./lib');
 global.Promise = require('bluebird');
 
-app.disable('x-powered-by');
+require('./validators');//can be run anytime after lib but before models, which depend on the validators.
 
+app.disable('x-powered-by');
 
 if(config.env == 'development'){
 
@@ -39,7 +40,8 @@ if(config.docs) {
 require('express-mongoose-helper')(app,{
     path: config.dir + '/models/',
     connectionString: config.mongo.url,
-    debug: config.mongo.debug,
+	debug: config.mongo.debug,
+	inject: [Lib.Validator],//inject validator
 	extend: (mongoose)=>{
 		mongoose.Promise = Promise;
 		// add more plugins and such here
