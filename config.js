@@ -3,6 +3,7 @@ module.exports = {
     public_dir: process.env.PUBLIC_DIR || false,
     env: process.env.NODE_ENV || 'development',
     jwt_secret: process.env.JWT_SECRET || 'foobar',
+    jwt_expiry: process.env.JWT_EXPIRY || '365',
     mongo: {
         url: process.env.MONGO_URL || 'mongodb://localhost/test',
         debug: process.env.MONGO_DEBUG || true,

@@ -1,20 +1,49 @@
 //for single user account.
-const bcrypt = require('bcryptjs');
+const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const uuid = require('node-uuid');
 
-module.exports = (app,Types)=>{
+module.exports = (app,Types,validate)=>{
 
     app.model('User',{
-        email: { type: String, required: true },
-		password: { type: String },
-		username: { type: String, required: true },
+
+		email: { 
+			type: String, 
+			validate: validate('email'),
+			index: {
+				unique: true	
+			}
+		},
+
+		phone: { 
+            type: String,
+            validate: validate('mobile_phone'),
+            index: {
+                unique: true,
+                partialFilterExpression: { phone: {$type: 'string'} }
+            }
+		},
+		
+		password: { type: String, required: true },
+
+		username: { 
+			type: String, 
+			index: {
+				unique: true
+			},
+			default: uuid.v4(), //pass uuid.v4 function to auto generate usernames
+			validate: validate('username')
+		},
+			
 		firstname: { type: String, default: '' },
 		lastname: { type: String, default:'' },
 		birthday: { type: Date, default: null },
-		avatar: { type: String, default: '/assets/anon.png' },
+
+		avatar: { type: String, default: '/assets/anon.png', validate: validate('url') },
 		sex: { type: String, enum:['male','female','undisclosed'], default: 'undisclosed' },
-        
+		
+		about: { type: String, validate: validate('text-140') },
+
 		//meta
         status: { type: String, enum:[ 'active','unconfirmed','locked' ], default: 'active' },
         roles: {
@@ -23,35 +52,21 @@ module.exports = (app,Types)=>{
         },
 		sessions: [
 			{
-				ip: String,
-				sid: String
+				ip: String, validate: validate('ip'),
+				sid: { type: String, validate: validate('uuid') }
 			}
 		]
     },{ timestamps: true },(schema)=>{
-
-        schema.index( { email: 1 }, { unique: true } );
-		schema.index( { username: 1 }, { unique: true } );
 		
 		//password hashing
 		schema.pre('save', function(next) {
-			var user = this;
-
-			// only hash the password if it has been modified (or is new)
-			if (!user.isModified('password')) return next();
-
-			// generate a salt
-			bcrypt.genSalt(10, function(err, salt) {
-				if (err){
-					console.log(err);
-					return next(err);
-				} 
-
-				// hash the password along with our new salt
-				bcrypt.hash(user.password, salt, function(err, hash) {
+			// this = document
+			if (!this.isModified('password')) return next();
+			bcrypt.genSalt(10,(err, salt)=>{
+				if (err) return next(err);
+				bcrypt.hash(this.password, salt,(err, hash)=>{
 					if (err) return next(err);
-
-					// override the cleartext password with the hashed one
-					user.password = hash;
+					this.password = hash;
 					next();
 				});
 			});
@@ -61,7 +76,7 @@ module.exports = (app,Types)=>{
 		schema.methods.clean = function(){
 			var obj = this.toObject();
 			var sensitive = ['password','sessions'];
-			sensitive.forEach(function(item){
+			sensitive.forEach((item)=>{
 				delete obj[item];
 			});
 			return obj;
@@ -69,14 +84,11 @@ module.exports = (app,Types)=>{
 		
 		//verify password on login
 		schema.methods.validatePass = function(candidatePassword, cb) {
-			bcrypt.compare(candidatePassword, this.password, function(err, isMatch) {
-				if (err) return cb(err);
-				cb(null, isMatch);
-			});
+			bcrypt.compare(candidatePassword, this.password, cb);
 		};
 
 		//generates a jwt
-		schema.methods.session_start = function(req,cb /* cb(err,jwt,user,expires) */){
+		schema.methods.session_start = function(req,cb /* cb(err,jwt,user) */){
 
 			var sessionObject = {
 				_id: this._id,
@@ -90,12 +102,10 @@ module.exports = (app,Types)=>{
             
             var user = this.clean();//for the callback. remove pw/sessions from user object.
             
-			jwt.sign(sessionObject, config.jwt_secret , {
-				expiresIn: '1 hour',
-			},function(err,token){
-                
-                var d = (new Date()).getTime() + (24 * 60 * 60 * 1000);
-				
+			var token = jwt.sign(sessionObject, config.jwt_secret , {
+				expiresIn: config.jwt_expiry,
+			},(err,token)=>{
+                	
 				//add the session to the user model
 				req.app.model.User.findByIdAndUpdate(user._id,{ 
 					$push: { 
@@ -104,8 +114,8 @@ module.exports = (app,Types)=>{
 							ip: req.ip
 						}
 					}
-				},function(err2){
-					cb(err||err2||null,token,user,d);
+				},(err2)=>{
+					cb(err||err2||null,token,user);
 				});
 
 			});
@@ -119,25 +129,8 @@ module.exports = (app,Types)=>{
 						sid: req.user.sid
 					}
 				}
-			},function(err){
-				cb(err);
-			})
+			},cb);
 		});
-
-		schema.methods.generate_PWCT = function(password,expiry,cb){
-			var self = this;
-			self.validatePass(password,function(err,match){
-				if(err || !match){
-					return cb('Incorrect password');
-				}
-
-				jwt.sign({}, config.jwt_secret , {
-					expiresIn: expiry,
-				},function(err,token){
-					cb(null,token);
-				});
-			});
-        };
         
     });
 
