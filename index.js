@@ -33,7 +33,7 @@ if(config.docs) {
 	require('express-aglio')(app,{
 		source: config.dir + '/docs/source/index.apib',
 		output: config.dir + '/docs/html/index.html',
-		log: ()=>{}
+		log:()=>{}
 	});	
 }
  
@@ -46,7 +46,7 @@ require('express-mongoose-helper')(app,{
 		mongoose.Promise = Promise;
 		// add more plugins and such here
 	},
-    log: (...args)=>log.info(...args)
+    log:(...args)=>log.info(...args)
 });
 
 app.request.validate = Lib.RequestValidator;
