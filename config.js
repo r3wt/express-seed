@@ -23,5 +23,11 @@ module.exports = {
             return undefined;// log library will use STDIO by default.    
         })()
     },
-    docs: process.env.ENABLE_DOCS || true
+    docs: process.env.ENABLE_DOCS || true,
+    mail: {
+        is_enabled: process.env.ENABLE_MAIL || false,
+        templatePath:'/templates/email/',
+        templateCache: false,
+        sengrid_key: ''
+    }
 };
