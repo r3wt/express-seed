@@ -25,9 +25,10 @@ module.exports = {
     },
     docs: process.env.ENABLE_DOCS || true,
     mail: {
-        is_enabled: process.env.ENABLE_MAIL || false,
+        enable: process.env.ENABLE_MAIL || false,
         templatePath:'/templates/email/',
         templateCache: false,
-        sengrid_key: ''
+        sengrid_key: '',
+        from: 'no-reply@example.com'
     }
 };

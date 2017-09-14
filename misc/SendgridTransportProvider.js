@@ -46,3 +46,5 @@ class SendgridTransportProvider {
     }
 
 }
+
+module.exports = SendgridTransportProvider;

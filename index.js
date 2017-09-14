@@ -30,11 +30,29 @@ if(config.env == 'development'){
 }
 
 if(config.docs) {
+
 	require('express-aglio')(app,{
 		source: config.dir + '/docs/source/index.apib',
 		output: config.dir + '/docs/html/index.html',
 		log:()=>{}
 	});	
+	
+}
+
+if(config.mail.enable){
+
+	const TwigTemplateProvider = require('./misc/TwigTemplateProvider');
+	const MailTemplate = new TwigTemplateProvider(config.mail);
+
+	const SendgridTransportProvider = require('./misc/SendgridTransportProvider');
+	const MailTransport = new SendgridTransportProvider(config.mail);
+	
+
+	global.mailer = new Lib.Mail({
+		TransportProvider: MailTransport,
+		TemplateProvider: MailTemplate
+	});
+
 }
  
 require('express-mongoose-helper')(app,{

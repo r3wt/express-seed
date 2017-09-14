@@ -2,9 +2,9 @@ const Twig = require('twig');
 
 class TwigTemplateProvider {
 
-    constructor(templatePath=config.mail.templatePath,cache=true){
+    constructor({templatePath,templateCache}){
         this.path = templatePath;
-        this.cache = cache;
+        this.cache = templateCache;
 
         if(!this.cache){
             Twig.cache(false);//disable template cacheing for twig.
