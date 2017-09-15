@@ -56,15 +56,15 @@ if(config.mail.enable){
 }
  
 require('express-mongoose-helper')(app,{
-    path: config.dir + '/models/',
-    connectionString: config.mongo.url,
+	path: config.dir + '/models/',
+	connectionString: config.mongo.url,
 	debug: config.mongo.debug,
 	inject: [Lib.Validator],//inject validator
 	extend: (mongoose)=>{
 		mongoose.Promise = Promise;
 		// add more plugins and such here
 	},
-    log:(...args)=>log.info(...args)
+	log:(...args)=>log.info(...args)
 });
 
 app.request.validate = Lib.RequestValidator;
