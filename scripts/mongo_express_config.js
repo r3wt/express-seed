@@ -9,7 +9,7 @@ module.exports = {
     ssl: config.mongo.use_ssl || false,
 
     //sslValidate: validate mongod server certificate against CA
-    sslValidate: process.env.ME_CONFIG_MONGODB_SSLVALIDATE || true,
+    sslValidate: config.mongo.validate_ssl || true,
 
     //sslCA: array of valid CA certificates
     sslCA:  [],
@@ -18,7 +18,7 @@ module.exports = {
     autoReconnect: true,
 
     //poolSize: size of connection pool (number of connections to use)
-    poolSize: 4,
+    poolSize: config.mongo.pool_size || 4,
 
     //set admin to true if you want to turn on admin features
     //if admin is true, the auth list below will be ignored
