@@ -1,13 +1,9 @@
 'use strict';
-const URL = require('url').Url;
-
-let mongo = new URL(config.mongo.url);
 
 module.exports = {
   mongodb: {
 
-    server: mongo.host,
-    port: mongo.port,
+    connectionString: config.mongo.url,// fix
 
     //ssl: connect to the server using secure SSL
     ssl: config.mongo.use_ssl || false,
